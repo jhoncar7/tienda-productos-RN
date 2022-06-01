@@ -48,5 +48,15 @@ export const loginStyles = StyleSheet.create({
         justifyContent: 'center',
         height: 600,
         marginBottom: 50,
+    },
+    backButton: {
+        position: 'absolute',
+        top:50,
+        left: 20,
+        borderWidth: 2,
+        borderColor: '#fff',
+        paddingHorizontal: 20,
+        paddingVertical: 5,
+        borderRadius: 100,
     }
 });
