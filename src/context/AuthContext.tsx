@@ -81,6 +81,7 @@ export const AuthProvider = ({ children }: any) => {
             })
         }
     };
+    
     const signUp = async ({ correo, password, nombre }: RegisterData) => {
 
         try {

@@ -11,9 +11,12 @@ const cafeApi = axios.create({ baseURL });
         const token = await AsyncStorage.getItem('token');
 
         if(token){
-            config.headers['x-token'] = token;
+            config.headers={
+                'x-token': token
+            }
+            
         }
     }
-); */
-
+);
+ */
 export default cafeApi;
