@@ -6,15 +6,16 @@ import { Picker } from '@react-native-picker/picker';
 import { useCategories } from '../hooks/useCategories';
 import { useForm } from '../hooks/useForm';
 import { ProductsContext } from '../context/ProductsContext';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 interface Props extends StackScreenProps<ProductsStackParams, 'Producto'> { }
 
 export const ProductScreen = ({ navigation, route }: Props) => {
 
     const { id = '', name = '' } = route.params;
-
+    const [temUri, setTemUri] = useState<string>();
     const { categories, isLoading } = useCategories();
-    const { loadProductById, addProduct, updateProduct } = useContext(ProductsContext)
+    const { loadProductById, addProduct, updateProduct, uploadImage } = useContext(ProductsContext)
 
     const { _id, categoriaId, img, nombre, form, onChange, setFormValue } = useForm({
         _id: id,
@@ -57,6 +58,31 @@ export const ProductScreen = ({ navigation, route }: Props) => {
         }
     }
 
+    const takePhoto = async () => {
+        launchCamera({
+            mediaType: 'photo',
+            quality: 0.5,
+        }, (resp) => {
+            if (resp.didCancel) return;
+            if (!resp.assets) return;
+            setTemUri(resp.assets[0].uri);
+            uploadImage(resp, _id);
+            console.log(resp);
+        });
+    }
+
+    const takePhotoFromGallery = async () => {
+        launchImageLibrary({
+            mediaType: 'photo',
+            quality: 0.5,
+        }, (resp) => {
+            if (resp.didCancel) return;
+            if (!resp.assets) return;
+            setTemUri(resp.assets[0].uri);
+            uploadImage(resp, _id);
+            console.log(resp);
+        });
+    }
 
     return (
         <View style={styles.container}>
@@ -98,13 +124,13 @@ export const ProductScreen = ({ navigation, route }: Props) => {
                         <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
                             <Button
                                 title='Camara'
-                                onPress={() => console.log('CLICK')}
+                                onPress={takePhoto}
                                 color='#5856D6'
                             />
                             <View style={{ width: 10 }} />
                             <Button
                                 title='Galeria'
-                                onPress={() => console.log('CLICK')}
+                                onPress={takePhotoFromGallery}
                                 color='#5856D6'
                             />
                         </View>
@@ -112,9 +138,19 @@ export const ProductScreen = ({ navigation, route }: Props) => {
                 }
 
                 {
-                    (img.length > 0) && (
+                    (img.length > 0 && !temUri) && (
                         <Image
                             source={{ uri: img }}
+                            style={{ width: '100%', height: 300, resizeMode: 'contain', marginTop: 50 }}
+                        />
+                    )
+                }
+
+                {/* mostrar imagen temporarl */}
+                {
+                    (temUri) && (
+                        <Image
+                            source={{ uri: temUri }}
                             style={{ width: '100%', height: 300, resizeMode: 'contain', marginTop: 50 }}
                         />
                     )

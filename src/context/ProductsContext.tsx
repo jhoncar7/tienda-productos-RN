@@ -3,6 +3,7 @@ import cafeApi from '../api/cafeApi';
 import { Producto, ProductsResponse } from '../interfaces/appInterdaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { ImagePickerResponse } from 'react-native-image-picker';
 
 type ProductsContesProps = {
     products: Producto[];
@@ -84,7 +85,30 @@ export const ProductsProvider = ({ children }: any) => {
         return resp.data;
     };
 
-    const uploadImage = async (data: any, id: string) => { };
+    const uploadImage = async (data: ImagePickerResponse, id: string) => {
+        try {
+            const fileToUpload = {
+                uri: data.assets[0].uri,
+                type: data.assets[0].type,
+                name: data.assets[0].fileName,
+            }
+            const formData = new FormData();
+            formData.append('archivo', fileToUpload);
+
+            const token = await AsyncStorage.getItem('token');
+            if (!token) throw new Error('No hay token');
+
+            const resp = await cafeApi.put(`/uploads/productos/${id}`, formData, {
+                headers: {
+                    'x-token': token,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            console.log(resp);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
 
     return (
