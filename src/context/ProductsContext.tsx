@@ -87,24 +87,26 @@ export const ProductsProvider = ({ children }: any) => {
 
     const uploadImage = async (data: ImagePickerResponse, id: string) => {
         try {
-            const fileToUpload = {
-                uri: data.assets[0].uri,
-                type: data.assets[0].type,
-                name: data.assets[0].fileName,
-            }
-            const formData = new FormData();
-            formData.append('archivo', fileToUpload);
-
-            const token = await AsyncStorage.getItem('token');
-            if (!token) throw new Error('No hay token');
-
-            const resp = await cafeApi.put(`/uploads/productos/${id}`, formData, {
-                headers: {
-                    'x-token': token,
-                    'Content-Type': 'multipart/form-data'
+            if (data.assets) {
+                const fileToUpload = {
+                    uri: data.assets[0].uri,
+                    type: data.assets[0].type,
+                    name: data.assets[0].fileName,
                 }
-            });
-            console.log(resp);
+                const formData = new FormData();
+                formData.append('archivo', fileToUpload);
+
+                const token = await AsyncStorage.getItem('token');
+                if (!token) throw new Error('No hay token');
+
+                const resp = await cafeApi.put(`/uploads/productos/${id}`, formData, {
+                    headers: {
+                        'x-token': token,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+            }
+
         } catch (error) {
             console.log(error);
         }
